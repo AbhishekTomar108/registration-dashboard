@@ -72,6 +72,7 @@ const RegisterStudentAdd = () => {
     PaymentMethod:"",
     joinTime:"",
     joinDate:"",
+    counselorReference:""
   });
 
   const addinpdata = async (e) => {
@@ -161,7 +162,7 @@ const RegisterStudentAdd = () => {
   const setCounselorData = (e)=>{
 
     console.log('select index =',e.target.selectedIndex,counselor[(e.target.selectedIndex)-1].counselorNo)
-    setINP({...inpval,["CounselorId"]:counselor[(e.target.selectedIndex)-1].counselorNo,["Counselor"]:e.target.value})
+    setINP({...inpval,["CounselorId"]:counselor[(e.target.selectedIndex)-1].counselorNo,["Counselor"]:e.target.value,["counselorReference"]:counselor[(e.target.selectedIndex)-1].counselorReference})
   }
 
   const setMethod  =(value)=>{

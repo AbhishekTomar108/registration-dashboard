@@ -1300,6 +1300,7 @@ p{
 	width: 60px;
 	background: url(http://michaeltruong.ca/images/logo1.png) no-repeat;
 	background-size: 60px 60px;
+
 }
 
 .clientlogo{
@@ -1314,6 +1315,10 @@ p{
 .info{
   display: block;
   margin-left: 0;
+}
+
+.media-body p{
+  color:white;
 }
 
 .title{

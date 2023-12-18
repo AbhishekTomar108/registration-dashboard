@@ -566,6 +566,9 @@ export default function Home() {
   const moveToAllCourses = () => {
     navigate("AllCourse", { state: { course: course, allCourse: allCourse } });
   };
+  const moveToAddCourses = () => {
+    navigate("AddCounselor");
+  };
   const moveToAllBatchTiming = () => {
     navigate("AllBatchTiming", {
       state: { weekDays: weekDaysBatch, weekEnd: weekEndBatch },
@@ -575,12 +578,11 @@ export default function Home() {
   const moveToStudentAttendance = (batch, id) => {
     navigate("fullattendance", { state: { id: id, batch: batch } });
   };
-
   return (
     <>
       <Header />
       <div className="sidebar-main-container">
-        <Sidebar />
+        {/* <Sidebar /> */}
         <div className="content-body">
           {/* row */}
           <div className="container-fluid">
@@ -657,6 +659,31 @@ export default function Home() {
                           <h3 className="text-white">
                             {allCourse && allCourse.length}
                           </h3>
+                          {/* <div className="progress mb-2 bg-white">
+                        <div
+                          className="progress-bar progress-animated bg-light"
+                          style={{ width: "30%" }}
+                        />
+                      </div> */}
+                          {/* <small>30% Increase in 30 Days</small> */}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-xl-3 col-xxl-3 col-sm-6">
+                  <div className="widget-stat card p-0 bg-danger">
+                    <div className="card-body">
+                      <div className="media">
+                        <span className="mr-3">
+                        <i class="fa-solid fa-plus"/>
+                        </span>
+                        <div
+                          className="media-body text-white"
+                          onClick={moveToAddCourses}
+                        >
+                          <p className="mb-1">Add counselor</p>
+                         
                           {/* <div className="progress mb-2 bg-white">
                         <div
                           className="progress-bar progress-animated bg-light"

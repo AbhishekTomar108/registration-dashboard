@@ -14,8 +14,6 @@ function RegistrationReceipt() {
 
   const generatePdf = () => {
     const content = document.getElementById('element'); 
-    
-
     html2pdf(content);
   };
       

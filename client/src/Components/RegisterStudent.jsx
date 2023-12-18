@@ -200,8 +200,7 @@ export default function RegisterStudent(props) {
 
       <Header />
       <div className='sidebar-main-container'>
-        <Sidebar />
-
+       
         <div className="content-body" style={{ minWidth: "876px" }}>
           {/* row */}
           <div className="container-fluid">

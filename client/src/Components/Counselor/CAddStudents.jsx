@@ -22,6 +22,7 @@ export default function CAddCounselor() {
   console.log('password =', randomGeneratedPassowrd)
   const [inpval, setINP] = useState({
     Name: '',
+    lastName: '',
     email: '',
     Number: '',
     Address: '',
@@ -33,14 +34,15 @@ export default function CAddCounselor() {
   };
 
   const addinpdata = async (e) => {
-    console.log('add inp func')
+    console.log('add inp func',inpval)
     e.preventDefault();
 
-    const { Name, email, Number, Address, file, password } = { ...inpval };
+    const { Name, email, Number, Address, file, password, lastName } = { ...inpval };
 
     const formData = new FormData();
     formData.append('file', file); // Append the file to the form data
     formData.append('Name', Name);
+    formData.append('lastName', lastName);
     formData.append('email', email);
     formData.append('Number', Number);
     formData.append('Address', Address);
@@ -135,6 +137,12 @@ export default function CAddCounselor() {
                         <div className="form-group">
                           <label className="form-label">Name</label>
                           <input type="text" value={inpval.Name} onChange={e => setINP({ ...inpval, [e.target.name]: e.target.value })} name="Name" class="form-control" id="exampleInputPassword1" />
+                        </div>
+                      </div>
+                      <div className="col-lg-6 col-md-6 col-sm-12">
+                        <div className="form-group">
+                          <label className="form-label">Last Name</label>
+                          <input type="text" value={inpval.lastName} onChange={e => setINP({ ...inpval, [e.target.name]: e.target.value })} name="lastName" class="form-control" id="exampleInputPassword1" />
                         </div>
                       </div>
                       <div className="col-lg-6 col-md-6 col-sm-12">

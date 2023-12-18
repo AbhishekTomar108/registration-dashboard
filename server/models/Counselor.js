@@ -5,6 +5,10 @@ const CounselorSchema = new mongoose.Schema({
 
     Name: {
         type: String,
+    },
+
+    lastName: {
+        type: String,
 
     },
     Number: {
@@ -31,6 +35,11 @@ const CounselorSchema = new mongoose.Schema({
 
     },
     counselorNo: {
+        type: String,
+
+    },
+    
+    counselorReference: {
         type: String,
 
     },

@@ -647,29 +647,31 @@ router.post("/registerStudent", async (req, res) => {
     let newRegistration;
     console.log('last student =',lastStudent)
 
-    if (lastStudent && lastStudent.RegistrationNo) {
-      const lastStudentEnrollment = lastStudent.RegistrationNo;
-      const currentYear = new Date().getFullYear();
+    // if (lastStudent && lastStudent.RegistrationNo) {
+    //   const lastStudentEnrollment = lastStudent.RegistrationNo;
+    //   const currentYear = new Date().getFullYear();
       
-      // Check if the last enrollment number belongs to the current year
-      if (lastStudentEnrollment.startsWith(`Reg${currentYear.toString()}`)) {
-        const lastEnrollmentNumber = parseInt(lastStudentEnrollment.substr(7), 10);
-        const nextEnrollmentNumber = lastEnrollmentNumber + 1;
+    //   // Check if the last enrollment number belongs to the current year
+    //   if (lastStudentEnrollment.startsWith(`Reg${currentYear.toString()}`)) {
+    //     const lastEnrollmentNumber = parseInt(lastStudentEnrollment.substr(7), 10);
+    //     const nextEnrollmentNumber = lastEnrollmentNumber + 1;
         
-         newRegistration = `Reg${currentYear}${nextEnrollmentNumber.toString().padStart(2, '0')}`;
-        console.log(newRegistration);
-      } else {
-        // Start a new enrollment for the current year
-         newRegistration = `Reg${currentYear}01`; // Assuming it starts from 01
-        console.log(newRegistration);
-      }
-    } else {
-      // If there are no previous enrollments, start a new one for the current year
-      const currentYear = new Date().getFullYear();
-       newRegistration = `Reg${currentYear}01`; // Assuming it starts from 01
-      console.log(newRegistration);
-    }
+    //      newRegistration = `Reg${currentYear}${nextEnrollmentNumber.toString().padStart(2, '0')}`;
+    //     console.log(newRegistration);
+    //   } else {
+    //     // Start a new enrollment for the current year
+    //      newRegistration = `Reg${currentYear}01`; // Assuming it starts from 01
+    //     console.log(newRegistration);
+    //   }
+    // } else {
+    //   // If there are no previous enrollments, start a new one for the current year
+    //   const currentYear = new Date().getFullYear();
+    //    newRegistration = `Reg${currentYear}01`; // Assuming it starts from 01
+    //   console.log(newRegistration);
+    // }
 
+
+    newRegistration = generateRegisterNo(lastStudent,req.body)
     req.body.RegistrationNo = newRegistration
 
 
@@ -721,6 +723,42 @@ router.get('/getCounselorNewRegisterStudent/:id',async(req,res)=>{
         res.status(500).json(error);
     }
 })
+
+
+//function to generate registeration No
+
+const generateRegisterNo = (student, data)=>{
+    console.log('generate enrollment =', data)
+    let course = '';
+    let splitCourse = data.Course.split(' ')
+    if (splitCourse.length > 1) {
+        splitCourse.map(data => {
+            course = `${course}${data[0]}`
+        })
+    }
+
+    else {
+        course = splitCourse[0]
+    }
+    let registrationNo;
+    let year = data.RegistrationDate.split('-')[0]
+    let month = data.RegistrationDate.split('-')[1]
+    if(student){
+            
+    let count = parseInt(student.RegistrationNo.split('/')[2].split('-')[1]);
+    count = count+1
+    count = count.toString().padStart(2, '0')
+    
+    registrationNo = `UC${year}/${course}-${data.counselorReference}/${month}-${count}`
+    console.log('enrollment no =',registrationNo)
+
+        }
+        else{
+            registrationNo = `UC${year}/${course}-${data.counselorReference}/${month}-01`
+        }
+
+    return registrationNo
+}
 
 //Get resister student
 
@@ -1607,18 +1645,22 @@ router.post("/addCounselor", controller.upload, async (req, res) => {
     sendmail(req, res)
 
     try {
-        console.log("add counselor =")
+        console.log("add counselor =",req.body)
         const email = req.body.email;
         const password = req.body.password;
         req.body.file = req.file;
         const url = req.url;
         // console.log('email =',email, password)
+        const allCounselor = await counselors.find()
 
         const lastCounselor  = await counselors.findOne({}, {}, { sort: { _id: -1 } }).exec(); // Sort by the default ObjectId in descending order
         
         let counselorNo = generateCounselorNo(lastCounselor,req.body.Name)
+        const newCounselorReference = createCounselorReference(allCounselor, req.body);
+        console.log('newCounselorReference =',newCounselorReference)
 
-        const username = await counselors.create({ Email: email, password: password, Number: req.body.Number, Address: req.body.Address, Name: req.body.Name, url: url, counselorNo : counselorNo });
+
+        const username = await counselors.create({ Email: email, password: password, Number: req.body.Number, Address: req.body.Address, Name: req.body.Name, lastName: req.body.lastName, url: url, counselorNo : counselorNo,counselorReference:newCounselorReference});
         // console.log('status =', username)
 
         if (username) {
@@ -1626,6 +1668,7 @@ router.post("/addCounselor", controller.upload, async (req, res) => {
             res.send({ "status": "active", "username": username })
 
         }
+
         else {
             res.send({ "status": "false" })
         }
@@ -1635,6 +1678,110 @@ router.post("/addCounselor", controller.upload, async (req, res) => {
         res.status(404).send({ "invalid Password": error.message })
     }
 })
+
+
+// function to create counselloReference 
+
+// function createCounselorReference(counselorsArray, newCounselor) {
+//     const newFirstNamePrefix = newCounselor.Name.substring(0, 3).toUpperCase();
+//     const newLastNamePrefix = newCounselor.lastName.substring(0, 3).toUpperCase();
+//     let counselorReference = newFirstNamePrefix;
+//     let existingLastNamePrefix
+
+//     let firstNameStatus = false;
+//     let lastNameStatus = false;
+
+//     for (const counselor of counselorsArray) {
+//         const existingFirstNamePrefix = counselor.Name.substring(0, 3).toUpperCase();
+
+    
+//         existingLastNamePrefix =  counselor.lastName.substring(0, 3).toUpperCase();
+
+
+//         if (newFirstNamePrefix !== existingFirstNamePrefix) 
+//         {
+//             break; // Prefixes don't match, use the newFirstNamePrefix
+//         }
+
+//         if (newLastNamePrefix !== existingLastNamePrefix)
+//          {
+//             counselorReference = newLastNamePrefix; // Use newLastNamePrefix if lastName prefixes don't match
+//             break;
+//         }
+
+//         counselorReference = newFirstNamePrefix + newLastNamePrefix; // Combine both prefixes
+//     }
+
+//     // Check if the generated counselorReference already exists, then append a count
+//     let count = 1;
+//     let tempReference = counselorReference;
+
+//     while (counselorsArray.some(counselor => counselor.counselorReference === tempReference)) 
+//     {
+//         count++;
+//         tempReference = counselorReference + '-' + count;
+//     }
+
+//     return tempReference;
+// }
+
+
+
+function createCounselorReference(counselorsArray, newCounselor) {
+    const newFirstNamePrefix = newCounselor.Name.substring(0, 3).toUpperCase();
+    const newLastNamePrefix = newCounselor.lastName.substring(0, 3).toUpperCase();
+    let counselorReference = newFirstNamePrefix;
+    let existingLastNamePrefix
+
+    let firstNameStatus = false;
+    let lastNameStatus = false;
+
+    for (const counselor of counselorsArray) {
+        const existingFirstNamePrefix = counselor.Name.substring(0, 3).toUpperCase();
+
+    
+        existingLastNamePrefix =  counselor.lastName.substring(0, 3).toUpperCase();
+
+
+        if (newFirstNamePrefix === existingFirstNamePrefix && firstNameStatus===false) 
+        {
+            firstNameStatus = true
+        }
+
+        if (newLastNamePrefix === existingLastNamePrefix && firstNameStatus === true )
+         {
+            lastNameStatus = true
+        }
+
+        
+    }
+
+    if(firstNameStatus===false){
+        return newFirstNamePrefix
+    }
+
+    else if(firstNameStatus===true && lastNameStatus === false){
+        return newLastNamePrefix
+    }
+
+    else if(lastNameStatus === true){
+    let count = 1;
+    let tempReference = newFirstNamePrefix + newLastNamePrefix;
+
+    while (counselorsArray.some(counselor => counselor.counselorReference === tempReference)) 
+    {
+        count++;
+        tempReference = tempReference + '-' + count;
+      
+    }
+
+    return tempReference
+    }
+
+    // Check if the generated counselorReference already exists, then append a count
+  
+}
+
 
 
 
